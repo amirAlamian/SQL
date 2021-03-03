@@ -7,9 +7,9 @@ sql queries
 CREATE TABLE cities (
     id SERIAL PRIMARY KEY
     country_id INTEGER REFERENCES country(id),
-	name VARCHAR(50),
-	population INTEGER,
-	aria BIGINT
+    name VARCHAR(50),
+    population INTEGER,
+    aria BIGINT
 );
 ```
 
@@ -19,8 +19,8 @@ CREATE TABLE cities (
 ```sql
 INSERT INTO cities(name, country, population, area)
 VALUES ('Dehli', 'India', 2546000, 6125),
-	   ('Shanghai', 'China', 22125000, 4015),
-	   ('Sao Paulo', 'Brazil', 20935000, 3043);
+       ('Shanghai', 'China', 22125000, 4015),
+       ('Sao Paulo', 'Brazil', 20935000, 3043);
     
 ```
 
