@@ -73,3 +73,8 @@ CASCADE: Delete related data too!<br>
 SET NULL: Set the foreign key to NULL.<br>
 SET DEFAULT: Set the foreign key to a provided default value.<br>
 </p>
+JOINS <br>
+<br>
+<br>
+
+<img src="./0001.jpg">
