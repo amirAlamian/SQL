@@ -78,3 +78,53 @@ JOINS <br>
 <br>
 
 <img src="./0001.jpg">
+
+<br>
+<br>
+<p>Full join</p>
+
+```sql
+SELECT * FROM
+users 
+FULL JOIN photos
+ON users.id = photos.user_id;
+```
+<p>Left join</p>
+
+```sql
+SELECT * FROM
+users 
+LEFT JOIN photos
+On users.id = photos.user_id;
+```
+<p>Right join</p>
+
+```sql
+SELECT * FROM
+users 
+RIGHT JOIN photos
+On users.id = photos.user_id;
+```
+
+<p>Inner join</p>
+
+```sql
+SELECT * FROM
+users 
+JOIN photos
+ON users.id = photos.user_id;
+```
+
+
+
+<h2>Some complicated queries</h2>
+
+```sql
+SELECT first_name, last_name, paid, users.id 
+FROM users 
+LEFT JOIN orders 
+ON users.id = orders.user_id 
+ORDER BY users.id DESC 
+offset 10 
+LIMIT 10 ;
+```
