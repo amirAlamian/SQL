@@ -415,3 +415,63 @@ DROP CONSTRAINT <name_of_constraint>
 CREATE TABLE products
 price INTEGER CHECK (price > 0)
 ```
+
+
+# Postgresql Advance 
+>SHOW
+>> See where Postgresql stores data 
+```sql
+SHOW data_directory
+```
+> See all data bases folder name in the oath
+```sql
+SELECT oid, datname 
+FROM pg_database;
+```
+> Tables and relations
+```sql
+SELECT * 
+FROM pg_class; -- Heap files
+```
+
+> Heap, Tuple and Blocks
+>> A single Heap files divided onto multiple Blocks. Each block
+>> has a size qual to 8kb and contains several Tuples.
+
+![Postgresql internals](./postgresqlInternals.png)
+## Blocks
+![Blocks](./blocks.png)
+
+
+# How PG stores data at the binary level
+
+ <a href= "https://www.postgresql.org/docs/current/storage-page-layout.html">Postgresql page for advance features</a>
+
+> The first 24 bytes of each page(Blocks) consists of a page header (PageHeaderData)
+>> hex
+>> ```
+>> 00 00 00 00 98 6F D2 0F 00 00 04 00 E4 00 28 01 
+>> 00 20 04 20 00 00 00 00 A8
+>>```
+
+>pd_lower
+>> In the header of every Blocks, 13th and 14th bytes represent the offset to the free space. In this case this bytes are ``E4 00``. These bytes is in hex format. If we convert them into int16, the result would be 228. This means that the free space in this block starts at 228th byte.
+
+>pd_upper
+>> Also in the header 15th and 16th bytes represent the offset to the end of free space. In this case these bytes are ``28 01``. If we convert them into int16 again, the result would be 296. This means that the free space in this block ends at 296th byte.
+
+
+![Header of Block](./header.png)
+
+## ItemId
+> In each Block, those bytes after the header and before the free space represent the ItemIds. Each ItemId is 4 Bytes. Each ItemId is a pointer to its Tuple (row) and store the length of the item in bytes. New ItemIds has would be added to the first of the list of ItemsIds which means the last ItemId that is located just before the free space, is the pointer to the first Tuple. In This case the first ItemId is ``28 81 AC 00``. The First two bytes represent the location of the Tuple and the rest of them represent the length of the Tuple. In order to calculate the location of the Tuple, you should do bitwise operation. For this operation you should convert the second byte into binary form and take the first ***seven*** bites then you should convert the first byte into binary and take all of those bites and put them after the previous seven bites.
+>> Let's do this. First we convert ``81`` to binary form. The result would be ``10000001``. Then we pick first seven bites which is ``0000001``. After that we convert the first byte which is ``28``. The result would be ``00101000``. Then we put the bites together to form the actual location of the Tuple. This number would be ``000000100101000``. If we convert this to int16 format we gain the ***296***. This means that the first Tuple starts at 296th bytes.
+
+>The last Two bytes represent the length of the Tuple. For our case those are <br/>``AC 00``. If we convert them to decimal values, it would be equal to ***172*** which means the length of the Tuple is equal to 172 bytes. 
+
+# INDEXES
+
+> Create
+>```sql
+>CREATE INDEX ON user(username);
+>```
