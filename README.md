@@ -475,3 +475,88 @@ FROM pg_class; -- Heap files
 >```sql
 >CREATE INDEX ON user(username);
 >```
+
+>Delete 
+>```sql
+> DROP INDEX <name of index>
+>```
+
+>Explain analyze for benchmarking
+>```sql
+> EXPLAIN ANALYZE SELECT username
+>FROM users;
+>```
+> This query shows the time takes to run and plan this query.
+
+>Find all indexes
+>```sql
+>SELECT relname, relkind
+>FROM pg_class 
+>WHERE relkind = 'i'
+>```
+
+# Common Table Expression
+
+```sql
+WITH tags AS (
+SELECT user_id, created_at 
+FROM caption_tags
+UNION ALL 	
+SELECT user_id, created_at 
+FROM photo_tags	
+)
+SELECT username , tags.created_at 
+FROM users 
+JOIN tags 
+ON users.id = tags.user_id 
+WHERE  tags.created_at < '2010-01-07' 
+ORDER BY username
+```
+# Recursive Common Table Expression (super advance)
+> Acts like a for in sql
+```sql
+WITH RECURSIVE countdown(var) AS (
+	SELECT 10 AS var --Initial, Non-recursive query
+	UNION
+	SELECT var - 1 -- Recursive query 
+	FROM countdown WHERE var > 1
+)
+SELECT * 
+FROM countdown;
+```
+> use this query when  you have a tree or graph-type data structure
+```sql
+WITH RECURSIVE suggestions(leader_id, follower_id, depth) AS (
+		SELECT leader_id, follower_id, 1 AS depth
+		FROM followers
+		WHERE follower_id = 1000
+	UNION
+		SELECT followers.leader_id, followers.follower_id, depth + 1
+		FROM followers 
+		JOIN suggestions
+		ON suggestions.leader_id = followers.follower_id
+		WHERE depth < 3
+)
+SELECT DISTINCT users.id, users.username 
+FROM suggestions
+JOIN users ON users.id = suggestions.leader_id
+WHERE depth > 1;
+```
+
+# VIEW
+
+> Store some useful query to a new table
+
+```sql
+CREATE VIEW tags AS (
+	SELECT id, user_id, post_id, 'caption' AS type 
+	FROM caption_tags
+UNION all
+	SELECT id, user_id, post_id, 'photo' AS type
+	FROM photo_tags
+);
+```
+
+
+
+# Transactions
